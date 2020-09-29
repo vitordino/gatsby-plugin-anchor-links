@@ -13,21 +13,25 @@ export function AnchorLink({
   title,
   children,
   className,
-  stripHash = false
+  stripHash = false,
+  ...props
 }) {
-  const linkProps = {
-    to: stripHash ? stripHashedLocation(to) : to,
-    onClick: e =>
-      stripHash ? handleStrippedLinkClick(to, e) : handleLinkClick(to, e)
+  const onClick = e => {
+    if (stripHash) return handleStrippedLinkClick(to, e);
+    return handleLinkClick(to, e);
   };
 
-  /**
-   * Optional props
-   */
-  if (title) linkProps.title = title;
-  if (className) linkProps.className = className;
+  const linkProps = {
+    ...props,
+    title,
+    className,
+    to: stripHash ? stripHashedLocation(to) : to,
+    onClick,
+  };
 
-  return <Link {...linkProps}>{Boolean(children) ? children : title}</Link>;
+  const _children = children || title;
+
+  return <Link {...linkProps}>{_children}</Link>;
 }
 
 AnchorLink.propTypes = anchorLinkTypes;
